@@ -9,10 +9,10 @@ helm:
       enabled: true
       host: sslip.io
 targetCustomizations:
-  - name: <cluster-name>
+  - name: elemental-demo-01
     helm:
       values:
         replicaCount: 1
         cow:
           color: red
-    clusterName: <cluster-id>
+    clusterName: elemental-demo-01
