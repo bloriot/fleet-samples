@@ -7,12 +7,13 @@ helm:
   values:
     ingress:
       enabled: true
-      host: sslip.io
+      ingressClassName: nginx
 targetCustomizations:
   - name: elemental-demo-01
     helm:
       values:
         replicaCount: 1
+        host: sslip.io
         cow:
           color: red
     clusterName: elemental-demo-01
