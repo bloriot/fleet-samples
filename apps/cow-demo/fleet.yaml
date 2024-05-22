@@ -15,5 +15,5 @@ targetCustomizations:
         replicaCount: 1
         host: sslip.io
         cow:
-          color: red
+          color: blue
     clusterName: elemental-demo-01
