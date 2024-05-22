@@ -12,8 +12,8 @@ targetCustomizations:
   - name: elemental-demo-01
     helm:
       values:
-        replicaCount: 1
+        replicaCount: 2
         host: cow-demo.sample-apps.10.6.110.78.sslip.io
         cow:
-          color: blue
+          color: green
     clusterName: elemental-demo-01
