@@ -1,0 +1,17 @@
+# À appliquer dans le workspace fleet-default (clusters downstream et importés).
+# Déploie rancher-demo sur tout cluster portant le label demo-app=rancher-demo.
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: rancher-demo
+  namespace: fleet-default
+spec:
+  repo: https://github.com/bloriot/fleet-samples.git
+  branch: main
+  paths:
+    - apps/rancher-demo
+  targets:
+    - name: rancher-demo-clusters
+      clusterSelector:
+        matchLabels:
+          demo-app: rancher-demo

@@ -1,0 +1,4 @@
+defaultNamespace: rancher-demo
+
+helm:
+  releaseName: rancher-demo

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: rancher-demo
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rancher-demo
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rancher-demo
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: rancher-demo
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: TITLE
+              value: {{ .Values.app.title | quote }}
+            - name: PETS
+              value: {{ .Values.app.pets | quote }}
+            - name: CONTAINER_COLOR
+              value: {{ .Values.app.color | quote }}
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
