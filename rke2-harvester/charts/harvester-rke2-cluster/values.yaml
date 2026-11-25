@@ -1,0 +1,48 @@
+cluster:
+  name: rke2-harvester-test
+  # Lister les versions disponibles : curl -sk https://<rancher>/v1-rke2/releases | jq -r '.data[].id'
+  kubernetesVersion: v1.34.3+rke2r1
+  labels: {}
+  annotations: {}
+  cni: canal
+
+# Nom du Secret (cattle-global-data) contenant le cloud credential Harvester.
+# Créé par scripts/harvester-secrets.sh credential, ou depuis l'UI (nom de type cc-xxxxx).
+cloudCredentialSecretName: harvester-cloud-credential
+
+# Secret (namespace fleet-default) contenant le kubeconfig du cloud provider Harvester.
+# Créé par scripts/harvester-secrets.sh cloudprovider. Vide = <cluster.name>-cloudprovider.
+cloudProviderConfigSecretName: ""
+
+# Valeurs communes à tous les pools, surchargeables pool par pool.
+machineDefaults:
+  vmNamespace: default
+  cpuCount: 4
+  memorySize: 8        # GiB
+  diskSize: 40         # GiB
+  imageName: default/CHANGEME            # <namespace>/<nom de la VMImage Harvester>
+  networkName: default/CHANGEME          # <namespace>/<nom du VM network Harvester>
+  sshUser: ubuntu
+  userData: |
+    #cloud-config
+    package_update: true
+    packages:
+      - qemu-guest-agent
+      - iptables
+    runcmd:
+      - - systemctl
+        - enable
+        - '--now'
+        - qemu-guest-agent.service
+
+machinePools:
+  - name: cp
+    quantity: 1
+    etcd: true
+    controlplane: true
+    worker: false
+  - name: worker
+    quantity: 1
+    etcd: false
+    controlplane: false
+    worker: true

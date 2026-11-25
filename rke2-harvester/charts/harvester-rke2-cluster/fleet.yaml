@@ -1,0 +1,24 @@
+defaultNamespace: fleet-default
+
+helm:
+  releaseName: rke2-harvester-test
+  # Ajoutez ici des fichiers de values supplémentaires (relatifs à ce dossier)
+  # valuesFiles:
+  #   - values-test.yaml
+  # ...ou surchargez directement des valeurs :
+  # values:
+  #   cluster:
+  #     name: rke2-harvester-test
+  waitForJobs: false
+
+# Rancher modifie le Cluster et les HarvesterConfig après leur création
+# (finalizers, status, champs par défaut). Si Fleet affiche le bundle en
+# "Modified", ajoutez ici des comparePatches ciblés, par exemple :
+# diff:
+#   comparePatches:
+#     - apiVersion: provisioning.cattle.io/v1
+#       kind: Cluster
+#       name: rke2-harvester-test
+#       namespace: fleet-default
+#       jsonPointers:
+#         - /spec/rkeConfig/machinePools

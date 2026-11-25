@@ -1,0 +1,6 @@
+apiVersion: v2
+name: harvester-rke2-cluster
+description: RKE2 cluster provisioned by Rancher on Harvester (node driver), meant to be deployed by Fleet
+type: application
+version: 0.1.0
+appVersion: "1.0"

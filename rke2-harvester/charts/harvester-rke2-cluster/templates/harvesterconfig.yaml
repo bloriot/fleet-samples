@@ -1,0 +1,19 @@
+{{- range $pool := .Values.machinePools }}
+{{- $m := mergeOverwrite (deepCopy $.Values.machineDefaults) $pool }}
+apiVersion: rke-machine-config.cattle.io/v1
+kind: HarvesterConfig
+metadata:
+  name: {{ include "hrc.machineConfigName" (dict "root" $ "pool" $pool) }}
+  namespace: fleet-default
+vmNamespace: {{ $m.vmNamespace | quote }}
+cpuCount: {{ $m.cpuCount | quote }}
+memorySize: {{ $m.memorySize | quote }}
+sshUser: {{ $m.sshUser | quote }}
+diskInfo: {{ dict "disks" (list (dict "imageName" $m.imageName "size" ($m.diskSize | int) "bootOrder" 1)) | toJson | quote }}
+networkInfo: {{ dict "interfaces" (list (dict "networkName" $m.networkName)) | toJson | quote }}
+userData: {{ $m.userData | quote }}
+{{- if $m.networkData }}
+networkData: {{ $m.networkData | quote }}
+{{- end }}
+---
+{{- end }}

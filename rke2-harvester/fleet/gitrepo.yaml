@@ -1,0 +1,16 @@
+# À appliquer UNE fois sur le cluster local de Rancher (kubectl apply -f).
+# Le namespace fleet-local cible automatiquement le cluster "local", là où
+# vivent les objets provisioning.cattle.io du namespace fleet-default.
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: rke2-harvester
+  namespace: fleet-local
+spec:
+  repo: https://github.com/bloriot/fleet-samples.git
+  branch: main
+  paths:
+    - rke2-harvester/charts/harvester-rke2-cluster
+  # Dépôt public : aucun secret nécessaire. S'il devient privé, ajoutez clientSecretName.
+  # clientSecretName: git-auth
+  # pollingInterval: 30s

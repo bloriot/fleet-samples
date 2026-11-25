@@ -1,0 +1,56 @@
+apiVersion: provisioning.cattle.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.cluster.name }}
+  namespace: fleet-default
+  {{- with .Values.cluster.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.cluster.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  kubernetesVersion: {{ .Values.cluster.kubernetesVersion }}
+  cloudCredentialSecretName: cattle-global-data:{{ .Values.cloudCredentialSecretName }}
+  rkeConfig:
+    machinePools:
+      {{- range $pool := .Values.machinePools }}
+      - name: {{ $pool.name }}
+        quantity: {{ $pool.quantity }}
+        etcdRole: {{ $pool.etcd }}
+        controlPlaneRole: {{ $pool.controlplane }}
+        workerRole: {{ $pool.worker }}
+        cloudCredentialSecretName: cattle-global-data:{{ $.Values.cloudCredentialSecretName }}
+        machineConfigRef:
+          apiVersion: rke-machine-config.cattle.io/v1
+          kind: HarvesterConfig
+          name: {{ include "hrc.machineConfigName" (dict "root" $ "pool" $pool) }}
+        {{- with $pool.labels }}
+        labels:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $pool.taints }}
+        taints:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+    machineGlobalConfig:
+      cni: {{ .Values.cluster.cni }}
+      disable-kube-proxy: false
+      etcd-expose-metrics: false
+    machineSelectorConfig:
+      - config:
+          cloud-provider-name: harvester
+          cloud-provider-config: secret://fleet-default:{{ include "hrc.cloudProviderSecret" . }}
+          protect-kernel-defaults: false
+    chartValues:
+      harvester-cloud-provider:
+        cloudConfigPath: /var/lib/rancher/rke2/etc/config-files/cloud-provider-config
+        global:
+          cattle:
+            clusterName: {{ .Values.cluster.name }}
+    upgradeStrategy:
+      controlPlaneConcurrency: "1"
+      workerConcurrency: "1"
