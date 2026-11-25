@@ -58,10 +58,10 @@ export HARVESTER_CLUSTER_NAME=harvester        # nom du cluster Harvester import
 export CLUSTER_NAME=rke2-harvester-test        # = cluster.name dans values.yaml
 export VM_NAMESPACE=default                    # = machineDefaults.vmNamespace
 
-./scripts/harvester-secrets.sh all
+./scripts/harvester-secrets.sh cloudprovider
 ```
 
-Vous pouvez aussi créer le cloud credential depuis l'UI (Cluster Management > Cloud Credentials), puis reporter son nom (`cc-xxxxx`) dans `cloudCredentialSecretName`. Lancez alors uniquement `./scripts/harvester-secrets.sh cloudprovider`.
+Le cloud credential est celui créé depuis l'UI (`cc-58bb7`, déjà reporté dans `cloudCredentialSecretName`). Sans credential existant, `./scripts/harvester-secrets.sh all` en crée un.
 
 > Le nom du ServiceAccount créé côté Harvester et l'annotation `v2prov-secret-authorized-for-cluster` doivent être égaux au nom du cluster. Le secret ne peut pas être partagé entre plusieurs clusters.
 

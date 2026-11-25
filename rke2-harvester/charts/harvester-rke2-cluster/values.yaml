@@ -8,7 +8,7 @@ cluster:
 
 # Nom du Secret (cattle-global-data) contenant le cloud credential Harvester.
 # Créé par scripts/harvester-secrets.sh credential, ou depuis l'UI (nom de type cc-xxxxx).
-cloudCredentialSecretName: harvester-cloud-credential
+cloudCredentialSecretName: cc-58bb7
 
 # Secret (namespace fleet-default) contenant le kubeconfig du cloud provider Harvester.
 # Créé par scripts/harvester-secrets.sh cloudprovider. Vide = <cluster.name>-cloudprovider.
@@ -19,10 +19,10 @@ machineDefaults:
   vmNamespace: default
   cpuCount: 4
   memorySize: 8        # GiB
-  diskSize: 40         # GiB
-  imageName: default/CHANGEME            # <namespace>/<nom de la VMImage Harvester>
-  networkName: default/CHANGEME          # <namespace>/<nom du VM network Harvester>
-  sshUser: ubuntu
+  diskSize: 50         # GiB
+  imageName: harvester-public/image-ph4pd   # <namespace>/<nom de la VMImage Harvester>
+  networkName: harvester-public/vlan-1110   # <namespace>/<nom du VM network Harvester>
+  sshUser: sles
   userData: |
     #cloud-config
     package_update: true
@@ -36,13 +36,8 @@ machineDefaults:
         - qemu-guest-agent.service
 
 machinePools:
-  - name: cp
-    quantity: 1
+  - name: node
+    quantity: 3
     etcd: true
     controlplane: true
-    worker: false
-  - name: worker
-    quantity: 1
-    etcd: false
-    controlplane: false
     worker: true
