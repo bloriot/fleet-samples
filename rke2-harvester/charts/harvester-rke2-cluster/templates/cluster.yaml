@@ -40,6 +40,7 @@ spec:
       cni: {{ .Values.cluster.cni }}
       disable-kube-proxy: false
       etcd-expose-metrics: false
+    {{- if eq .Values.cloudProvider "harvester" }}
     machineSelectorConfig:
       - config:
           cloud-provider-name: harvester
@@ -51,6 +52,7 @@ spec:
         global:
           cattle:
             clusterName: {{ .Values.cluster.name }}
+    {{- end }}
     upgradeStrategy:
       controlPlaneConcurrency: "1"
       workerConcurrency: "1"

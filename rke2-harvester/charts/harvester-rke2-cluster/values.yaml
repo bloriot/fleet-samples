@@ -10,6 +10,12 @@ cluster:
 # Créé par scripts/harvester-secrets.sh credential, ou depuis l'UI (nom de type cc-xxxxx).
 cloudCredentialSecretName: cc-58bb7
 
+# Cloud provider du cluster RKE2 :
+#   ""         = "Default - RKE2 Embedded" (aucun secret supplémentaire)
+#   "harvester" = CCM/CSI Harvester (LoadBalancer, stockage) ; requiert le secret ci-dessous
+cloudProvider: ""
+
+# Utilisé seulement si cloudProvider: harvester.
 # Secret (namespace fleet-default) contenant le kubeconfig du cloud provider Harvester.
 # Créé par scripts/harvester-secrets.sh cloudprovider. Vide = <cluster.name>-cloudprovider.
 cloudProviderConfigSecretName: ""

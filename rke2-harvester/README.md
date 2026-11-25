@@ -47,7 +47,9 @@ scripts/harvester-secrets.sh     création des deux secrets hors Git
 - Renseignez `imageName` et `networkName` (format `<namespace>/<nom>`) dans `machineDefaults` de `values.yaml`.
 - Vérifiez `cluster.kubernetesVersion`. Les versions disponibles sont listées par `curl -sk https://<rancher>/v1-rke2/releases`.
 
-### 2. Créer les secrets
+### 2. Créer le secret du cloud provider (seulement avec `cloudProvider: harvester`)
+
+Par défaut (`cloudProvider: ""`), le cluster utilise "Default - RKE2 Embedded" et cette étape est inutile. Passez à l'étape 3.
 
 Avec `kubectl` pointant sur le cluster local de Rancher (`jq` et `curl` requis) :
 
