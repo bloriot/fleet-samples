@@ -1,7 +1,7 @@
 cluster:
   name: rke2-harvester-test
   # Lister les versions disponibles : curl -sk https://<rancher>/v1-rke2/releases | jq -r '.data[].id'
-  kubernetesVersion: v1.34.4+rke2r1
+  kubernetesVersion: v1.34.13+rke2r1
   # Le label demo-app=rancher-demo déclenche le déploiement de apps/rancher-demo (gitrepos/rancher-demo.yaml)
   labels:
     demo-app: rancher-demo
