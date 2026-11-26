@@ -1,19 +1,20 @@
+# Valeurs par défaut génériques. La configuration d'une instance (nom du cluster,
+# version, credential, image, réseau...) se fait dans fleet.yaml (helm.values).
+# Les valeurs vides ci-dessous sont obligatoires : le rendu échoue si elles manquent.
+
 cluster:
-  name: rke2-harvester-test
+  name: ""
   # Lister les versions disponibles : curl -sk https://<rancher>/v1-rke2/releases | jq -r '.data[].id'
-  kubernetesVersion: v1.34.13+rke2r1
-  # Le label demo-app=rancher-demo déclenche le déploiement de apps/rancher-demo (gitrepos/rancher-demo.yaml)
-  labels:
-    demo-app: rancher-demo
+  kubernetesVersion: ""
+  labels: {}
   annotations: {}
   cni: canal
 
-# Nom du Secret (cattle-global-data) contenant le cloud credential Harvester.
-# Créé par scripts/harvester-secrets.sh credential, ou depuis l'UI (nom de type cc-xxxxx).
-cloudCredentialSecretName: cc-58bb7
+# Nom du Secret (cattle-global-data) contenant le cloud credential Harvester (cc-xxxxx).
+cloudCredentialSecretName: ""
 
 # Cloud provider du cluster RKE2 :
-#   ""         = "Default - RKE2 Embedded" (aucun secret supplémentaire)
+#   ""          = "Default - RKE2 Embedded" (aucun secret supplémentaire)
 #   "harvester" = CCM/CSI Harvester (LoadBalancer, stockage) ; requiert le secret ci-dessous
 cloudProvider: ""
 
@@ -25,12 +26,12 @@ cloudProviderConfigSecretName: ""
 # Valeurs communes à tous les pools, surchargeables pool par pool.
 machineDefaults:
   vmNamespace: default
-  cpuCount: 4
-  memorySize: 8        # GiB
-  diskSize: 50         # GiB
-  imageName: harvester-public/image-ph4pd   # <namespace>/<nom de la VMImage Harvester>
-  networkName: harvester-public/vlan-1110   # <namespace>/<nom du VM network Harvester>
-  sshUser: sles
+  cpuCount: 2
+  memorySize: 4        # GiB
+  diskSize: 40         # GiB
+  imageName: ""        # <namespace>/<nom de la VMImage Harvester>
+  networkName: ""      # <namespace>/<nom du VM network Harvester>
+  sshUser: ""
   userData: |
     #cloud-config
     package_update: true
@@ -43,9 +44,10 @@ machineDefaults:
         - '--now'
         - qemu-guest-agent.service
 
+# Les listes ne sont pas fusionnées par Helm : redéfinir machinePools le remplace en entier.
 machinePools:
   - name: node
-    quantity: 3
+    quantity: 1
     etcd: true
     controlplane: true
     worker: true

@@ -32,8 +32,8 @@ Rancher ne crée le second automatiquement que depuis l'UI. Lors d'un provisioni
 
 ```
 charts/harvester-rke2-cluster/   chart Helm (bundle Fleet)
-  fleet.yaml                     options Fleet (namespace cible, release Helm)
-  values.yaml                    paramètres du cluster et des pools
+  fleet.yaml                     configuration de l'instance (helm.values) : nom, version, credential, image, réseau, pools
+  values.yaml                    valeurs par défaut génériques du chart
 fleet/gitrepo.yaml               GitRepo à appliquer une fois sur Rancher
 scripts/harvester-secrets.sh     création des deux secrets hors Git
 ```
@@ -44,8 +44,8 @@ scripts/harvester-secrets.sh     création des deux secrets hors Git
 
 - Une `VMImage` cloud (Ubuntu 22.04/24.04 par exemple) dans Harvester.
 - Un VM network pour les VMs.
-- Renseignez `imageName` et `networkName` (format `<namespace>/<nom>`) dans `machineDefaults` de `values.yaml`.
-- Vérifiez `cluster.kubernetesVersion`. Les versions disponibles sont listées par `curl -sk https://<rancher>/v1-rke2/releases`.
+- Renseignez `imageName` et `networkName` (format `<namespace>/<nom>`) dans `helm.values.machineDefaults` de `fleet.yaml`.
+- Vérifiez `cluster.kubernetesVersion` (dans `fleet.yaml`). Les versions disponibles sont listées par `curl -sk https://<rancher>/v1-rke2/releases`.
 
 ### 2. Créer le secret du cloud provider (seulement avec `cloudProvider: harvester`)
 
@@ -57,13 +57,13 @@ Avec `kubectl` pointant sur le cluster local de Rancher (`jq` et `curl` requis) 
 export RANCHER_URL=https://rancher.example.com
 export RANCHER_TOKEN=token-xxxxx:yyyyyyyy      # token API Rancher
 export HARVESTER_CLUSTER_NAME=harvester        # nom du cluster Harvester importé
-export CLUSTER_NAME=rke2-harvester-test        # = cluster.name dans values.yaml
-export VM_NAMESPACE=default                    # = machineDefaults.vmNamespace
+export CLUSTER_NAME=rke2-harvester-test        # = cluster.name dans fleet.yaml
+export VM_NAMESPACE=default                    # = machineDefaults.vmNamespace (défaut : default)
 
 ./scripts/harvester-secrets.sh cloudprovider
 ```
 
-Le cloud credential est celui créé depuis l'UI (`cc-58bb7`, déjà reporté dans `cloudCredentialSecretName`). Sans credential existant, `./scripts/harvester-secrets.sh all` en crée un.
+Le cloud credential est celui créé depuis l'UI (`cc-58bb7`, déjà reporté dans `cloudCredentialSecretName` de `fleet.yaml`). Sans credential existant, `./scripts/harvester-secrets.sh all` en crée un.
 
 > Le nom du ServiceAccount créé côté Harvester et l'annotation `v2prov-secret-authorized-for-cluster` doivent être égaux au nom du cluster. Le secret ne peut pas être partagé entre plusieurs clusters.
 
@@ -88,10 +88,15 @@ Dans l'UI : *Continuous Delivery > Git Repos* et *Cluster Management*.
 
 ## Valider le rendu en local
 
+Les valeurs de l'instance sont dans `fleet.yaml`. Les extraire dans un fichier pour les passer à Helm :
+
 ```bash
-helm lint charts/harvester-rke2-cluster
-helm template t charts/harvester-rke2-cluster
+python3 -c "import yaml;yaml.safe_dump(yaml.safe_load(open('charts/harvester-rke2-cluster/fleet.yaml'))['helm']['values'],open('/tmp/inst.yaml','w'))"
+helm lint charts/harvester-rke2-cluster -f /tmp/inst.yaml
+helm template t charts/harvester-rke2-cluster -f /tmp/inst.yaml
 ```
+
+Sans ces valeurs, le rendu échoue volontairement (nom du cluster, version, credential, image et réseau sont obligatoires).
 
 ## Points d'attention
 

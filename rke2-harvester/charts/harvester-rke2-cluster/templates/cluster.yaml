@@ -1,7 +1,7 @@
 apiVersion: provisioning.cattle.io/v1
 kind: Cluster
 metadata:
-  name: {{ .Values.cluster.name }}
+  name: {{ include "hrc.clusterName" . }}
   namespace: fleet-default
   {{- with .Values.cluster.labels }}
   labels:
@@ -12,8 +12,8 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  kubernetesVersion: {{ .Values.cluster.kubernetesVersion }}
-  cloudCredentialSecretName: cattle-global-data:{{ .Values.cloudCredentialSecretName }}
+  kubernetesVersion: {{ required "cluster.kubernetesVersion est obligatoire" .Values.cluster.kubernetesVersion }}
+  cloudCredentialSecretName: cattle-global-data:{{ required "cloudCredentialSecretName est obligatoire" .Values.cloudCredentialSecretName }}
   rkeConfig:
     machinePools:
       {{- range $pool := .Values.machinePools }}
@@ -22,7 +22,7 @@ spec:
         etcdRole: {{ $pool.etcd }}
         controlPlaneRole: {{ $pool.controlplane }}
         workerRole: {{ $pool.worker }}
-        cloudCredentialSecretName: cattle-global-data:{{ $.Values.cloudCredentialSecretName }}
+        cloudCredentialSecretName: cattle-global-data:{{ required "cloudCredentialSecretName est obligatoire" $.Values.cloudCredentialSecretName }}
         machineConfigRef:
           apiVersion: rke-machine-config.cattle.io/v1
           kind: HarvesterConfig
@@ -51,7 +51,7 @@ spec:
         cloudConfigPath: /var/lib/rancher/rke2/etc/config-files/cloud-provider-config
         global:
           cattle:
-            clusterName: {{ .Values.cluster.name }}
+            clusterName: {{ include "hrc.clusterName" . }}
     {{- end }}
     upgradeStrategy:
       controlPlaneConcurrency: "1"

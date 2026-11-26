@@ -1,7 +1,11 @@
+{{- define "hrc.clusterName" -}}
+{{- required "cluster.name est obligatoire" .Values.cluster.name -}}
+{{- end -}}
+
 {{- define "hrc.machineConfigName" -}}
-{{- printf "%s-%s" .root.Values.cluster.name .pool.name -}}
+{{- printf "%s-%s" (include "hrc.clusterName" .root) .pool.name -}}
 {{- end -}}
 
 {{- define "hrc.cloudProviderSecret" -}}
-{{- default (printf "%s-cloudprovider" .Values.cluster.name) .Values.cloudProviderConfigSecretName -}}
+{{- default (printf "%s-cloudprovider" (include "hrc.clusterName" .)) .Values.cloudProviderConfigSecretName -}}
 {{- end -}}

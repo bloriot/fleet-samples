@@ -2,14 +2,30 @@ defaultNamespace: fleet-default
 
 helm:
   releaseName: rke2-harvester-test
-  # Ajoutez ici des fichiers de values supplémentaires (relatifs à ce dossier)
-  # valuesFiles:
-  #   - values-test.yaml
-  # ...ou surchargez directement des valeurs :
-  # values:
-  #   cluster:
-  #     name: rke2-harvester-test
   waitForJobs: false
+  # Configuration de cette instance. Les valeurs par défaut sont dans values.yaml.
+  values:
+    cluster:
+      name: rke2-harvester-test
+      kubernetesVersion: v1.34.13+rke2r1
+      # Ce label déclenche le déploiement de apps/rancher-demo (gitrepos/rancher-demo.yaml)
+      labels:
+        demo-app: rancher-demo
+    cloudCredentialSecretName: cc-58bb7
+    cloudProvider: ""
+    machineDefaults:
+      cpuCount: 4
+      memorySize: 8
+      diskSize: 50
+      imageName: harvester-public/image-ph4pd
+      networkName: harvester-public/vlan-1110
+      sshUser: sles
+    machinePools:
+      - name: node
+        quantity: 3
+        etcd: true
+        controlplane: true
+        worker: true
 
 # Rancher modifie le Cluster et les HarvesterConfig après leur création
 # (finalizers, status, champs par défaut). Si Fleet affiche le bundle en

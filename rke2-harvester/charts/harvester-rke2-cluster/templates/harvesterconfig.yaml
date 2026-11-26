@@ -8,9 +8,9 @@ metadata:
 vmNamespace: {{ $m.vmNamespace | quote }}
 cpuCount: {{ $m.cpuCount | quote }}
 memorySize: {{ $m.memorySize | quote }}
-sshUser: {{ $m.sshUser | quote }}
-diskInfo: {{ dict "disks" (list (dict "imageName" $m.imageName "size" ($m.diskSize | int) "bootOrder" 1)) | toJson | quote }}
-networkInfo: {{ dict "interfaces" (list (dict "networkName" $m.networkName)) | toJson | quote }}
+sshUser: {{ required "machineDefaults.sshUser est obligatoire" $m.sshUser | quote }}
+diskInfo: {{ dict "disks" (list (dict "imageName" (required "machineDefaults.imageName est obligatoire" $m.imageName) "size" ($m.diskSize | int) "bootOrder" 1)) | toJson | quote }}
+networkInfo: {{ dict "interfaces" (list (dict "networkName" (required "machineDefaults.networkName est obligatoire" $m.networkName))) | toJson | quote }}
 userData: {{ $m.userData | quote }}
 {{- if $m.networkData }}
 networkData: {{ $m.networkData | quote }}
